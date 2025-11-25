@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SJZIRx20/Ho=",
+  "dgSpecHash": "CHH6S6+pRoM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\MauiAppIT13.csproj",
+  "projectFilePath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\LENOVO\\.nuget\\packages\\googlegson\\2.13.0.1\\googlegson.2.13.0.1.nupkg.sha512",
     "C:\\Users\\LENOVO\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.8\\microsoft.extensions.configuration.9.0.8.nupkg.sha512",

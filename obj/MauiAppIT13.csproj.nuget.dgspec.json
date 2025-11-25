@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\MauiAppIT13.csproj": {}
+    "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13.csproj": {}
   },
   "projects": {
-    "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\MauiAppIT13.csproj": {
+    "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\MauiAppIT13.csproj",
+        "projectUniqueName": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13.csproj",
         "projectName": "MauiAppIT13",
-        "projectPath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\MauiAppIT13.csproj",
+        "projectPath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13.csproj",
         "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\MauiAppIT13\\obj\\",
+        "outputPath": "C:\\Users\\LENOVO\\source\\repos\\MauiAppIT13\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
