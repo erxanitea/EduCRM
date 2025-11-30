@@ -49240,24 +49240,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Era\\.nuget\\packages\\": {},
+    "C:\\Users\\LENOVO\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Era\\source\\repos\\EduCRM\\MauiAppIT13.csproj",
+      "projectUniqueName": "C:\\Users\\LENOVO\\Edu-IT13Project\\MauiAppIT13.csproj",
       "projectName": "MauiAppIT13",
-      "projectPath": "C:\\Users\\Era\\source\\repos\\EduCRM\\MauiAppIT13.csproj",
-      "packagesPath": "C:\\Users\\Era\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Era\\source\\repos\\EduCRM\\obj\\",
+      "projectPath": "C:\\Users\\LENOVO\\Edu-IT13Project\\MauiAppIT13.csproj",
+      "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\LENOVO\\Edu-IT13Project\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Era\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
