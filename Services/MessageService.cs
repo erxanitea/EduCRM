@@ -92,9 +92,9 @@ public class MessageService
                     u.role,
                     ISNULL(m.content, 'No messages yet') as last_message,
                     ISNULL(c.last_message_time, c.created_at) as last_message_time
-                FROM dbo.conversations c
-                LEFT JOIN dbo.users u ON (CASE WHEN c.participant1_id = @UserId THEN c.participant2_id ELSE c.participant1_id END) = u.user_id
-                LEFT JOIN dbo.messages m ON c.last_message_id = m.message_id
+                FROM conversations c
+                LEFT JOIN users u ON (CASE WHEN c.participant1_id = @UserId THEN c.participant2_id ELSE c.participant1_id END) = u.user_id
+                LEFT JOIN messages m ON c.last_message_id = m.message_id
                 WHERE c.participant1_id = @UserId OR c.participant2_id = @UserId";
 
             Debug.WriteLine($"MessageService: Executing SQL query...");
@@ -164,11 +164,11 @@ public class MessageService
                     m.created_at,
                     u.display_name,
                     u.role
-                FROM dbo.messages m
-                INNER JOIN dbo.conversations c ON 
+                FROM messages m
+                INNER JOIN conversations c ON 
                     (m.sender_id = c.participant1_id OR m.sender_id = c.participant2_id) AND
                     (m.receiver_id = c.participant1_id OR m.receiver_id = c.participant2_id)
-                INNER JOIN dbo.users u ON m.sender_id = u.user_id
+                INNER JOIN users u ON m.sender_id = u.user_id
                 WHERE c.conversation_id = @ConversationId
                 ORDER BY m.created_at ASC";
 
@@ -223,10 +223,10 @@ public class MessageService
             const string connectionString = "Data Source=LAPTOP-L1R9L9R3\\SQLEXPRESS01;Initial Catalog=EduCRM;Integrated Security=True;Connect Timeout=10;Encrypt=False;Trust Server Certificate=True;";
             
             const string sql = @"
-                INSERT INTO dbo.messages (message_id, sender_id, receiver_id, content, is_read, created_at)
+                INSERT INTO messages (message_id, sender_id, receiver_id, content, is_read, created_at)
                 VALUES (@MessageId, @SenderId, @ReceiverId, @Content, 0, GETUTCDATE());
                 
-                UPDATE dbo.conversations 
+                UPDATE conversations 
                 SET last_message_id = @MessageId, last_message_time = GETUTCDATE()
                 WHERE (participant1_id = @SenderId AND participant2_id = @ReceiverId) 
                    OR (participant1_id = @ReceiverId AND participant2_id = @SenderId);";
