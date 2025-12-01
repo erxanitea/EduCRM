@@ -20,6 +20,8 @@ public sealed class SqlServerDbConnection : DbConnection
             ?? throw new InvalidOperationException("Connection string 'EduCrmSql' not found in appsettings.json");
     }
 
+    public string GetConnectionString() => _connectionString;
+
     private SqlConnection CreateConnection() => new(_connectionString);
 
     public override async Task<bool> HasAnyUsersAsync()

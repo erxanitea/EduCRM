@@ -82,7 +82,7 @@ public class MessageService
             Debug.WriteLine($"MessageService: Loading conversations for user {userId}");
             var conversations = new ObservableCollection<Conversation>();
             
-            // Simple query to test if we can fetch any conversations
+            // Query to fetch conversations for the user
             const string sql = @"
                 SELECT TOP 10
                     c.conversation_id,
@@ -95,45 +95,55 @@ public class MessageService
                 FROM conversations c
                 LEFT JOIN users u ON (CASE WHEN c.participant1_id = @UserId THEN c.participant2_id ELSE c.participant1_id END) = u.user_id
                 LEFT JOIN messages m ON c.last_message_id = m.message_id
-                WHERE c.participant1_id = @UserId OR c.participant2_id = @UserId";
+                WHERE c.participant1_id = @UserId OR c.participant2_id = @UserId
+                ORDER BY c.last_message_time DESC";
 
-            Debug.WriteLine($"MessageService: Executing SQL query...");
+            Debug.WriteLine($"MessageService: Executing SQL query for conversations...");
             
-            await using var connection = new SqlConnection("Data Source=LAPTOP-L1R9L9R3\\SQLEXPRESS01;Initial Catalog=EduCRM;Integrated Security=True;Connect Timeout=10;Encrypt=False;Trust Server Certificate=True;");
-            await connection.OpenAsync();
-            Debug.WriteLine("MessageService: Connection opened");
-            
-            await using var command = new SqlCommand(sql, connection);
-            command.CommandTimeout = 10;
-            command.Parameters.AddWithValue("@UserId", userId);
-
-            await using var reader = await command.ExecuteReaderAsync();
-            Debug.WriteLine("MessageService: Query executed, reading results...");
-            
-            int rowCount = 0;
-            while (await reader.ReadAsync())
+            if (_dbConnection is SqlServerDbConnection sqlConn)
             {
-                rowCount++;
-                var participantId = reader.GetGuid(2); // participant2_id if participant1 is current user
-                var participantName = reader.IsDBNull(3) ? "Unknown" : reader.GetString(3);
+                var connString = sqlConn.GetConnectionString();
+                await using var connection = new SqlConnection(connString);
+                await connection.OpenAsync();
+                Debug.WriteLine("MessageService: Connection opened successfully");
                 
-                var conversation = new Conversation
+                await using var command = new SqlCommand(sql, connection);
+                command.CommandTimeout = 10;
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                await using var reader = await command.ExecuteReaderAsync();
+                Debug.WriteLine("MessageService: Query executed, reading results...");
+                
+                int rowCount = 0;
+                while (await reader.ReadAsync())
                 {
-                    Id = reader.GetGuid(0),
-                    ParticipantId = participantId,
-                    ParticipantName = participantName,
-                    ParticipantRole = reader.IsDBNull(4) ? "User" : reader.GetString(4),
-                    LastMessage = reader.GetString(5),
-                    LastMessageTime = reader.GetDateTime(6),
-                    UnreadCount = 0,
-                    Initials = GetInitials(participantName),
-                    AvatarColor = GetAvatarColor(participantId)
-                };
-                conversations.Add(conversation);
-                Debug.WriteLine($"MessageService: Added conversation {rowCount}: {participantName}");
+                    rowCount++;
+                    var participantId = reader.GetGuid(2);
+                    var participantName = reader.IsDBNull(3) ? "Unknown" : reader.GetString(3);
+                    
+                    var conversation = new Conversation
+                    {
+                        Id = reader.GetGuid(0),
+                        ParticipantId = participantId,
+                        ParticipantName = participantName,
+                        ParticipantRole = reader.IsDBNull(4) ? "User" : reader.GetString(4),
+                        LastMessage = reader.GetString(5),
+                        LastMessageTime = reader.GetDateTime(6),
+                        UnreadCount = 0,
+                        Initials = GetInitials(participantName),
+                        AvatarColor = GetAvatarColor(participantId)
+                    };
+                    conversations.Add(conversation);
+                    Debug.WriteLine($"MessageService: Added conversation {rowCount}: {participantName}");
+                }
+                
+                Debug.WriteLine($"MessageService: Total conversations loaded: {conversations.Count}");
+            }
+            else
+            {
+                Debug.WriteLine("MessageService: DbConnection is not SqlServerDbConnection");
             }
             
-            Debug.WriteLine($"MessageService: Total conversations loaded: {conversations.Count}");
             return conversations;
         }
         catch (Exception ex)
@@ -169,35 +179,45 @@ public class MessageService
                 WHERE c.conversation_id = @ConversationId
                 ORDER BY m.created_at ASC";
 
-            const string connectionString = "Data Source=LAPTOP-L1R9L9R3\\SQLEXPRESS01;Initial Catalog=EduCRM;Integrated Security=True;Connect Timeout=10;Encrypt=False;Trust Server Certificate=True;";
-            await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
-            await using var command = new SqlCommand(sql, connection);
-            command.CommandTimeout = 5;
-            command.Parameters.AddWithValue("@ConversationId", conversationId);
-
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            if (_dbConnection is SqlServerDbConnection sqlConn)
             {
-                var senderId = reader.GetGuid(1);
-                var message = new Message
-                {
-                    Id = reader.GetGuid(0),
-                    SenderId = senderId,
-                    ReceiverId = reader.GetGuid(2),
-                    Content = reader.GetString(3),
-                    IsRead = reader.GetBoolean(4),
-                    CreatedAtUtc = reader.GetDateTime(5),
-                    SenderName = reader.GetString(6),
-                    SenderRole = reader.GetString(7),
-                    SenderInitials = GetInitials(reader.GetString(6)),
-                    AvatarColor = GetAvatarColor(senderId)
-                };
-                messages.Add(message);
-                Debug.WriteLine($"MessageService: Loaded message: {message.Content}");
-            }
+                var connectionString = sqlConn.GetConnectionString();
+                await using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                Debug.WriteLine("MessageService: Connection opened for messages");
+                
+                await using var command = new SqlCommand(sql, connection);
+                command.CommandTimeout = 5;
+                command.Parameters.AddWithValue("@ConversationId", conversationId);
 
-            Debug.WriteLine($"MessageService: Total messages loaded: {messages.Count}");
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var senderId = reader.GetGuid(1);
+                    var message = new Message
+                    {
+                        Id = reader.GetGuid(0),
+                        SenderId = senderId,
+                        ReceiverId = reader.GetGuid(2),
+                        Content = reader.GetString(3),
+                        IsRead = reader.GetBoolean(4),
+                        CreatedAtUtc = reader.GetDateTime(5),
+                        SenderName = reader.GetString(6),
+                        SenderRole = reader.GetString(7),
+                        SenderInitials = GetInitials(reader.GetString(6)),
+                        AvatarColor = GetAvatarColor(senderId)
+                    };
+                    messages.Add(message);
+                    Debug.WriteLine($"MessageService: Loaded message: {message.Content}");
+                }
+
+                Debug.WriteLine($"MessageService: Total messages loaded: {messages.Count}");
+            }
+            else
+            {
+                Debug.WriteLine("MessageService: DbConnection is not SqlServerDbConnection");
+            }
+            
             return messages;
         }
         catch (Exception ex)
@@ -217,8 +237,6 @@ public class MessageService
 
             Debug.WriteLine($"MessageService: Sending message from {senderId} to {receiverId}");
             
-            const string connectionString = "Data Source=LAPTOP-L1R9L9R3\\SQLEXPRESS01;Initial Catalog=EduCRM;Integrated Security=True;Connect Timeout=10;Encrypt=False;Trust Server Certificate=True;";
-            
             const string sql = @"
                 INSERT INTO messages (message_id, sender_id, receiver_id, content, is_read, created_at)
                 VALUES (@MessageId, @SenderId, @ReceiverId, @Content, 0, GETUTCDATE());
@@ -228,22 +246,33 @@ public class MessageService
                 WHERE (participant1_id = @SenderId AND participant2_id = @ReceiverId) 
                    OR (participant1_id = @ReceiverId AND participant2_id = @SenderId);";
 
-            var messageId = Guid.NewGuid();
-            
-            await using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
-            await using var command = new SqlCommand(sql, connection);
-            command.CommandTimeout = 5;
-            
-            command.Parameters.AddWithValue("@MessageId", messageId);
-            command.Parameters.AddWithValue("@SenderId", senderId);
-            command.Parameters.AddWithValue("@ReceiverId", receiverId);
-            command.Parameters.AddWithValue("@Content", content);
+            if (_dbConnection is SqlServerDbConnection sqlConn)
+            {
+                var connectionString = sqlConn.GetConnectionString();
+                var messageId = Guid.NewGuid();
+                
+                await using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                Debug.WriteLine("MessageService: Connection opened for sending message");
+                
+                await using var command = new SqlCommand(sql, connection);
+                command.CommandTimeout = 5;
+                
+                command.Parameters.AddWithValue("@MessageId", messageId);
+                command.Parameters.AddWithValue("@SenderId", senderId);
+                command.Parameters.AddWithValue("@ReceiverId", receiverId);
+                command.Parameters.AddWithValue("@Content", content);
 
-            await command.ExecuteNonQueryAsync();
-            
-            Debug.WriteLine($"MessageService: Message sent successfully");
-            return true;
+                await command.ExecuteNonQueryAsync();
+                
+                Debug.WriteLine($"MessageService: Message sent successfully");
+                return true;
+            }
+            else
+            {
+                Debug.WriteLine("MessageService: DbConnection is not SqlServerDbConnection");
+                return false;
+            }
         }
         catch (Exception ex)
         {
