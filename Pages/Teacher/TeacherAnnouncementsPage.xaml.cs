@@ -351,6 +351,11 @@ public partial class TeacherAnnouncementsPage : ContentPage
         _selectedAnnouncement = null;
     }
 
+    private void OnTargetPickerChanged(object? sender, EventArgs e)
+    {
+        // Nothing to do yet — method exists only to satisfy XAML handler wiring
+    }
+
     private static string GetVisibilityFromPickerIndex(int index) => index switch
     {
         1 => "students",
