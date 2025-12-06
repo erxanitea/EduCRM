@@ -413,6 +413,8 @@ public partial class TeacherAnnouncementsPage : ContentPage
 }
 
 // Helper class for announcement data
+[SupportedOSPlatform("windows10.0.17763.0")]
+[SupportedOSPlatform("android21.0")]
 public class AnnouncementItem
 {
     public Guid Id { get; set; }

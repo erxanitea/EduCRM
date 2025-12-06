@@ -480,7 +480,7 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <VerticalStackLayout Grid.Column="0" Spacing="6">
                                 <Label x:Name="ModalTitleLabel"
-                                       Text="Create New Announcement" 
+                                       Text="Create Announcement" 
                                        FontSize="22" 
                                        FontAttributes="Bold"
                                        TextColor="White"/>
@@ -507,7 +507,7 @@
                             
                             <!-- Subject Field -->
                             <VerticalStackLayout Spacing="10">
-                                <Label Text="Subject *" 
+                                <Label Text="Subject: " 
                                        FontSize="14" 
                                        TextColor="#2C3E50"
                                        FontAttributes="Bold"/>
@@ -530,15 +530,16 @@
                             <!-- Target Audience and Publish Row -->
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
                                 <!-- Target Audience -->
-                                <VerticalStackLayout Grid.Column="0" Spacing="10">
-                                    <Label Text="Target Audience *" 
+                                <VerticalStackLayout Spacing="10" Grid.Column="0">
+                                    <Label Text="Target Audience:" 
                                            FontSize="14" 
                                            TextColor="#2C3E50"
                                            FontAttributes="Bold"/>
                                     <Picker x:Name="TargetPicker"
                                             TextColor="#2C3E50"
                                             BackgroundColor="White"
-                                            FontSize="14">
+                                            FontSize="14"
+                                            SelectedIndexChanged="OnTargetPickerChanged">
                                         <Picker.Items>
                                             <x:String>All Users</x:String>
                                             <x:String>Students</x:String>
@@ -576,7 +577,7 @@
 
                             <!-- Message Field -->
                             <VerticalStackLayout Spacing="10">
-                                <Label Text="Message *" 
+                                <Label Text="Message:" 
                                        FontSize="14" 
                                        TextColor="#2C3E50"
                                        FontAttributes="Bold"/>
